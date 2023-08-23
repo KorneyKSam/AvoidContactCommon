@@ -5,7 +5,7 @@ namespace AvoidContactCommon.Validation
 {
     public class CommonSignValidator
     {
-        private readonly Regex LoginRegex = new(@"^(?!.*[-_.]{2})([A-Za-z]).([A-Za-z0-9-_.]{2,18})([A-Za-z0-9])$");
+        private readonly Regex LoginRegex = new(@"^(?!.*[-_.]{2})([A-Za-z])([A-Za-z0-9-_.]{2,18})([A-Za-z0-9])$");
         private readonly Regex PasswordRegex = new(@"^(?=(.*[A-Z]){1,})(?=(.*[a-z]){1,})(?=(.*[0-9]){3,})(?=(.*[!@#$%^&*()_+,.\\\/;':""-]){3,}).{8,20}$");
         private readonly Regex EmailRegex = new(@"^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
 
