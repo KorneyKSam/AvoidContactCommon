@@ -5,9 +5,11 @@ namespace AvoidContactCommon.Validation
 {
     public class CommonSignValidator
     {
-        private readonly Regex LoginRegex = new(@"^(?!.*[-_.]{2})([A-Za-z])([A-Za-z0-9-_.]{2,18})([A-Za-z0-9])$");
-        private readonly Regex PasswordRegex = new(@"^(?=(.*[A-Z]){1,})(?=(.*[a-z]){1,})(?=(.*[0-9]){3,})(?=(.*[!@#$%^&*()_+,.\\\/;':""-]){3,}).{8,20}$");
-        private readonly Regex EmailRegex = new(@"^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
+        private readonly Regex DescriptionRegex = new(@"^.{0,495}$");
+        private readonly Regex CallSignRegex = new(@"^([A-Za-zÀ-ßà-ÿ ]{2,30})$");
+        private readonly Regex LoginRegex = new(@"^(?!.*[-_.]{2})([A-Za-z])([A-Za-z0-9-_.]{2,13})([A-Za-z0-9])$");
+        private readonly Regex PasswordRegex = new(@"^(?=(.*[A-ZÀ-ß]){1,})(?=(.*[a-zà-ÿ]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()_+,.\\\/;':""-]){1,}).{8,20}$");
+        private readonly Regex EmailRegex = new(@"^([a-zà-ÿA-ZÀ-ß0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
 
         public SignInResult CheckSignIn(string login, string password)
         {
@@ -18,54 +20,72 @@ namespace AvoidContactCommon.Validation
             return SignInResult.NotValidLoginOrPassword;
         }
 
-        public SignUpResult CheckSignUp(SignedPlayerInfo signedPlayerInfo)
+        public bool CheckCommonInfo(PlayerInfo commonPlayerInfo)
+        {
+            return ValidateCallSign(commonPlayerInfo.CallSign) && ValidateDescription(commonPlayerInfo.PlayerDiscription);
+        }
+
+        public SignUpResult CheckSignUp(SignInfo signedPlayerInfo)
         {
             bool isLoginValid = ValidateLogin(signedPlayerInfo.Login);
             bool isPasswordValid = ValidatePassword(signedPlayerInfo.Password);
             bool isEmailValid = ValidateEmail(signedPlayerInfo.Email);
 
+            var result = SignUpResult.Success;
+
             if (!isLoginValid && !isPasswordValid && !isEmailValid)
             {
-                return SignUpResult.NotValidLoginAndPasswordAndEmail;
+                result = SignUpResult.NotValidLoginAndPasswordAndEmail;
             }
 
             if (!isLoginValid && !isPasswordValid)
             {
-                return SignUpResult.NotValidLoginAndPassword;
+                result = SignUpResult.NotValidLoginAndPassword;
             }
 
             if (!isLoginValid && !isEmailValid)
             {
-                return SignUpResult.NotValidLoginAndEmail;
+                result = SignUpResult.NotValidLoginAndEmail;
             }
 
             if (!isPasswordValid && !isEmailValid)
             {
-                return SignUpResult.NotValidEmailAndPassword;
+                result = SignUpResult.NotValidEmailAndPassword;
             }
 
             if (!isLoginValid)
             {
-                return SignUpResult.NotValidLogin;
+                result = SignUpResult.NotValidLogin;
             }
 
             if (!isPasswordValid)
             {
-                return SignUpResult.NotValidPassword;
+                result = SignUpResult.NotValidPassword;
             }
 
             if (!isEmailValid)
             {
-                return SignUpResult.NotValidEmail;
+                result = SignUpResult.NotValidEmail;
             }
 
-            return SignUpResult.Success;
+            if (!ValidateCallSign(signedPlayerInfo.CallSign))
+            {
+                result = SignUpResult.NotValidCallSign;
+            }
+
+            if (!ValidateDescription(signedPlayerInfo.PlayerDiscription))
+            {
+                result = SignUpResult.NotValidDescription;
+            }
+
+            return result;
         }
 
         private bool ValidateLogin(string login)
         {
             return !string.IsNullOrWhiteSpace(login) && LoginRegex.IsMatch(login);
         }
+
         private bool ValidatePassword(string password)
         {
             return !string.IsNullOrWhiteSpace(password) && PasswordRegex.IsMatch(password);
@@ -74,6 +94,16 @@ namespace AvoidContactCommon.Validation
         private bool ValidateEmail(string email)
         {
             return !string.IsNullOrWhiteSpace(email) && EmailRegex.IsMatch(email);
+        }
+
+        private bool ValidateCallSign(string callSign)
+        {
+            return !string.IsNullOrWhiteSpace(callSign) && CallSignRegex.IsMatch(callSign);
+        }
+
+        private bool ValidateDescription(string description)
+        {
+            return DescriptionRegex.IsMatch(description);
         }
     }
 }

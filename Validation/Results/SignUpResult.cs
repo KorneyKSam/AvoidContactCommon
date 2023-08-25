@@ -12,5 +12,7 @@
         NotValidLoginAndEmail = 7,
         NotValidEmailAndPassword = 8,
         NotValidLoginAndPasswordAndEmail = 9,
+        NotValidCallSign = 10,
+        NotValidDescription = 11,
     }
 }
